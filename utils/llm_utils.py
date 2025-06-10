@@ -63,9 +63,10 @@ def _build_invoice_prompt(context_json: str, question: str, chat_history: str = 
     """
     
     system = (
-        "You are an invoice assistant. Answer the user's question using ONLY the data"
-        " in the JSON context below. Be concise and factual. If you cannot answer from"
-        " the context, say 'I don't know.'"
+        "You are an invoice assistant. Answer the user's question using ONLY the JSON data below."
+        " Output must be **exactly** as plain text—no Markdown of any kind—and you **must**"
+        " preserve all original spaces and punctuation from the data."
+        " If you cannot answer from the context, reply with exactly 'I don't know.'"
     )
     parts = ["[SYSTEM]", system, "[/SYSTEM]", f"[CONTEXT]\n{context_json}\n[/CONTEXT]"]
     if chat_history:
