@@ -7,6 +7,7 @@ def _fmt_currency(val, multiplier: float = 1.0) -> str:
     """
     Format a raw value as a currency string.
     """
+    
     try:
         amount = float(val) * multiplier
         return f"${amount:,.2f}"
