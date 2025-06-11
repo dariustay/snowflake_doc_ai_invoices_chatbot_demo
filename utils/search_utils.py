@@ -3,6 +3,17 @@ from typing import List, Dict, Any
 from utils.snowflake_utils import session, root
 
 
+def _fmt_currency(val, multiplier: float = 1.0) -> str:
+    """
+    Format a raw value as a currency string.
+    """
+    try:
+        amount = float(val) * multiplier
+        return f"${amount:,.2f}"
+    except (ValueError, TypeError):
+        return val
+
+
 def query_cortex_search_service(query: str, service: str, limit: int, metadata: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
     Execute a search against a specified Cortex Search service and format results.
@@ -38,12 +49,12 @@ def query_cortex_search_service(query: str, service: str, limit: int, metadata: 
     # Format and return results list
     return [
         {
-            "file": rec.get('FILE_NAME', '<unknown>'),
-            "chunk": rec.get(search_col, ''),
-            "seller": rec.get('SELLER_NAME_VALUE'),
-            "client": rec.get('CLIENT_NAME_VALUE'),
-            "total_gross": rec.get('TOTAL_GROSS_WORTH_VALUE'),
-            "issue_date": rec.get('ISSUE_DATE_VALUE'),
+            "file": rec["FILE_NAME"],
+            "chunk": rec[search_col],
+            "seller": rec["SELLER_NAME_VALUE"],
+            "client": rec["CLIENT_NAME_VALUE"],
+            "total_gross": _fmt_currency(rec['TOTAL_GROSS_WORTH_VALUE']),
+            "issue_date": rec["ISSUE_DATE_VALUE"],
         }
         for rec in resp.results
     ]
