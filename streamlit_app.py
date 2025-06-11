@@ -147,7 +147,7 @@ def main_chat_loop(config: Dict[str, Any], model: str) -> None:
                 st.markdown(answer)
 
         # Show raw search results for transparency
-        st.markdown("#### 🔍 Search Results")
+        st.markdown("##### 🔍 Search Results")
         if chunks:
             for idx, c in enumerate(chunks, start=1):
                 with st.expander(f"Result {idx}: {c['file']}"):
