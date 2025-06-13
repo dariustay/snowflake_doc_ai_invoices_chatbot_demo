@@ -159,6 +159,11 @@ def main_chat_loop(config: Dict[str, Any], model: str) -> None:
                     temperature=config['summary_temperature'],
                     chat_history=st.session_state.messages
                 )
+
+                # For debugging: Uncomment if the text format looks weird
+                # st.sidebar.markdown("#### Raw LLM response")
+                # st.sidebar.code(answer, language="text")
+                
                 st.session_state.messages.append({"role": "assistant", "content": answer})
                 st.markdown(answer)
 

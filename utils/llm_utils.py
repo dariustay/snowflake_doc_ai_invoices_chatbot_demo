@@ -9,11 +9,11 @@ def _build_refine_prompt(raw_question: str, chat_history: str) -> str:
     Construct a prompt for refining user questions using chat history.
     """
     
-    system = (
-        "You are a query refiner. Given the recent chat history and a user question,"
-        " produce a cleaner, more focused question preserving the user's intent."
-        " Output ONLY the rewritten question."
-    )
+    system = """
+    You are a query refiner. 
+    Given the recent chat history and a user question, produce a cleaner, more focused question preserving the user's intent.
+    Output ONLY the rewritten question.
+    """
     return "\n".join([
         "[SYSTEM]",
         system,
@@ -62,14 +62,20 @@ def _build_invoice_prompt(context_json: str, question: str, chat_history: str = 
     Build a structured prompt for answering invoice questions using provided context.
     """
     
-    system = (
-        "You are an invoice assistant. Answer the user's question using ONLY the data "
-        "in the JSON context below. Be concise and factual. "
-        "When you need to return multiple discrete pieces of information, format those as a bullet list; "
-        "otherwise respond in normal prose. "
-        "Always format money with a leading '$', commas for thousands, and two decimal places. "
-        "If you cannot answer from the context, say 'I don't know.'"
-    )
+    system = """
+    You are an invoice assistant. Answer the user's question using ONLY the data in the JSON context below. Be concise and factual.  
+    Output must be valid Markdown.
+    
+    When you need to return multiple discrete pieces of information, format it as a Markdown list:
+    - Always put a blank line before and after the list.
+    - Start each bullet with `- ` (dash + space).
+    - Put each financial line (net worth, VAT, gross worth, etc.) on its own line.
+    
+    Otherwise, respond in normal prose.
+    
+    Always format money with a leading ‘$’, commas for thousands, and two decimal places.  
+    If you cannot answer from the context, say “I don't know.”
+    """
     parts = ["[SYSTEM]", system, "[/SYSTEM]", f"[CONTEXT]\n{context_json}\n[/CONTEXT]"]
     if chat_history:
         parts += [f"[HISTORY]\n{chat_history}\n[/HISTORY]"]
