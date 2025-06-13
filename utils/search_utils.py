@@ -15,7 +15,7 @@ def _fmt_currency(val, multiplier: float = 1.0) -> str:
         return val
 
 
-def query_cortex_search_service(query: str, service: str, limit: int, metadata: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def query_cortex_search_service(query: str, service: str, limit: int, metadata: List[Dict[str, Any]], min_total_gross: float, max_total_gross: float) -> List[Dict[str, Any]]:
     """
     Execute a search against a specified Cortex Search service and format results.
     """
@@ -38,8 +38,20 @@ def query_cortex_search_service(query: str, service: str, limit: int, metadata: 
     try:
         resp = svc.search(
             query=query,
-            columns=[search_col, 'FILE_NAME', 'SELLER_NAME_VALUE',
-                     'CLIENT_NAME_VALUE', 'TOTAL_GROSS_WORTH_VALUE', 'ISSUE_DATE_VALUE'],
+            columns=[
+                search_col,
+                'FILE_NAME',
+                'SELLER_NAME_VALUE',
+                'CLIENT_NAME_VALUE',
+                'TOTAL_GROSS_WORTH_VALUE',
+                'ISSUE_DATE_VALUE'
+            ],
+            filter={
+                "@and": [
+                    {"@gte": {"TOTAL_GROSS_WORTH_VALUE": min_total_gross}},
+                    {"@lte": {"TOTAL_GROSS_WORTH_VALUE": max_total_gross}}
+                ]
+            },
             limit=limit,
             group_by_field="FILE_NAME"
         )

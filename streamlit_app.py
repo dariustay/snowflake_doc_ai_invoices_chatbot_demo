@@ -45,24 +45,34 @@ def load_config() -> Dict[str, Any]:
         st.session_state.service_metadata = load_service_metadata()
 
     # Search configuration UI
-    with st.sidebar.expander("🔍 Search Configuration", expanded=True):
+    with st.sidebar.expander("🔍 Search Configuration", expanded=False):
         svc_names = [m["name"] for m in st.session_state.service_metadata]
-        selected_service = st.selectbox("Service", svc_names)
+        selected_service = st.selectbox("Service:", svc_names)
         num_retrieved_chunks = st.number_input(
-            "Chunks to retrieve", min_value=1, max_value=10, value=5
+            "Chunks to retrieve:", min_value=1, max_value=10, value=5
         )
 
     # Chat and LLM settings UI
     with st.sidebar.expander("💬 Chat Settings", expanded=False):
         use_chat_history = st.checkbox("Use chat history", value=True)
         num_chat_messages = st.number_input(
-            "History turns", min_value=1, max_value=10, value=5
+            "History turns:", min_value=1, max_value=10, value=5
         )
 
-    # Controls UI
-    with st.sidebar.expander("⚙️ Controls", expanded=False):
-        if st.button("Clear conversation"):
-            st.session_state.clear_conversation = True
+    # Chat filters UI
+    with st.sidebar.expander("⚙️ Chat Filters", expanded=False):
+        min_total_gross, max_total_gross = st.slider(
+            "Total gross range:",
+            min_value=0.0,
+            max_value=1_000_000.0,
+            value=(0.0, 1_000_000.0),
+            step=1_000.0,
+            format="%.2f"
+        )
+
+    # Clear conversation button
+    if st.sidebar.button("Clear conversation"):
+        st.session_state.clear_conversation = True
 
     # Return assembled config
     return {
@@ -74,6 +84,8 @@ def load_config() -> Dict[str, Any]:
         "refine_max_tokens": REFINE_MAX_TOKENS,
         "summary_temperature": SUMMARY_TEMPERATURE,
         "summary_max_tokens": SUMMARY_MAX_TOKENS,
+        "min_total_gross": min_total_gross,
+        "max_total_gross": max_total_gross,
     }
 
 
@@ -122,7 +134,9 @@ def main_chat_loop(config: Dict[str, Any], model: str) -> None:
             rewritten_q,
             service=config['selected_service'],
             limit=config['num_retrieved_chunks'],
-            metadata=st.session_state.service_metadata
+            metadata=st.session_state.service_metadata,
+            min_total_gross=config['min_total_gross'],
+            max_total_gross=config['max_total_gross'],
         )
         st.session_state.last_context_json = json.dumps(chunks)
 
@@ -147,7 +161,7 @@ def main_chat_loop(config: Dict[str, Any], model: str) -> None:
                 st.markdown(answer)
 
         # Show raw search results for transparency
-        st.markdown("##### 🔍 Search Results")
+        st.markdown("###### 🔍 Search Results")
         if chunks:
             for idx, c in enumerate(chunks, start=1):
                 with st.expander(f"Result {idx}: {c['file']}"):
