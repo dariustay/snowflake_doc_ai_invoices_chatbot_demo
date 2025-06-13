@@ -70,6 +70,8 @@ def load_config() -> Dict[str, Any]:
             format="%.2f"
         )
 
+    st.sidebar.markdown("---")
+    
     # Clear conversation button
     if st.sidebar.button("Clear conversation"):
         st.session_state.clear_conversation = True
