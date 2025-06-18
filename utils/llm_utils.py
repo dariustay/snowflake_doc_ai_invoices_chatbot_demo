@@ -27,7 +27,7 @@ def _build_refine_prompt(raw_question: str, chat_history: str) -> str:
     ])
 
 
-def refine_question(raw_question: str, model_name: str, use_history: bool, num_history: int, temperature: float, max_tokens: int) -> str:
+def refine_question(raw_question: str, model_name: str, num_history: int, temperature: float, max_tokens: int) -> str:
     """
     Optionally rewrite the user's question for clarity and focus.
 
@@ -35,7 +35,7 @@ def refine_question(raw_question: str, model_name: str, use_history: bool, num_h
     Otherwise returns the original question.
     """
     
-    if not use_history or len(st.session_state.messages) < 2:
+    if len(st.session_state.messages) < 2:
         return raw_question
 
     hist = st.session_state.messages[-num_history:]

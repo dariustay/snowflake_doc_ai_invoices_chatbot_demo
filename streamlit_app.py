@@ -54,7 +54,6 @@ def load_config() -> Dict[str, Any]:
 
     # Chat and LLM settings UI
     with st.sidebar.expander("💬 Chat Settings", expanded=False):
-        use_chat_history = st.checkbox("Use chat history", value=True)
         num_chat_messages = st.number_input(
             "History turns:", min_value=1, max_value=10, value=5
         )
@@ -80,7 +79,6 @@ def load_config() -> Dict[str, Any]:
     return {
         "selected_service": selected_service,
         "num_retrieved_chunks": num_retrieved_chunks,
-        "use_chat_history": use_chat_history,
         "num_chat_messages": num_chat_messages,
         "refine_temperature": REFINE_TEMPERATURE,
         "refine_max_tokens": REFINE_MAX_TOKENS,
@@ -125,7 +123,6 @@ def main_chat_loop(config: Dict[str, Any], model: str) -> None:
         rewritten_q = refine_question(
             raw_question=user_q,
             model_name=model,
-            use_history=config['use_chat_history'],
             num_history=config['num_chat_messages'],
             temperature=config['refine_temperature'],
             max_tokens=config['refine_max_tokens']
