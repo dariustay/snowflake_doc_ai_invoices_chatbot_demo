@@ -154,7 +154,7 @@ def main_chat_loop(config: Dict[str, Any], model: str) -> None:
                     model_name=model,
                     max_tokens=config['summary_max_tokens'],
                     temperature=config['summary_temperature'],
-                    chat_history=st.session_state.messages
+                    chat_history=st.session_state.messages[-config['num_chat_messages']:]
                 )
 
                 # For debugging: Uncomment if the text format looks weird
